@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "83104518436",
+    "project_id": "posyandu-61c89",
+    "storage_bucket": "posyandu-61c89.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83104518436:android:36f68a0b383be3b3b863b1",
+        "android_client_info": {
+          "package_name": "com.example.posyandu_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxoYJiCKcJljp-und1bysXPGuQgkmxQv8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
