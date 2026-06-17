@@ -81,7 +81,7 @@ class DashboardKader extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 16), // Jarak antar tombol
+            const SizedBox(height: 16),
 
             // Tombol ke Jadwal Posyandu
             ElevatedButton.icon(
@@ -98,6 +98,26 @@ class DashboardKader extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const JadwalPosyanduScreen()),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // 👇 Tombol Baru: Input Pemeriksaan
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.all(20),
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF0288D1),
+                alignment: Alignment.centerLeft,
+                side: const BorderSide(color: Color(0xFFB3E5FC)),
+              ),
+              icon: const Icon(Icons.monitor_weight, size: 30), // Ikon timbangan
+              label: const Text('Input Pemeriksaan', style: TextStyle(fontSize: 18)),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DaftarBalitaScreen()),
                 );
               },
             ),

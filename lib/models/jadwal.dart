@@ -1,36 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 class JadwalModel {
-  String id;
-  String poskoId;
-  DateTime tanggal;
-  String kegiatan;
-  String lokasi; // Detail lokasi jika diperlukan (misal: Balai Desa)
+  final String id;
+  final String kegiatan;
+  final DateTime tanggal;
+  final String lokasi;
+  final String poskoId;
+  String? namaPosko; // Tambahkan field ini
 
   JadwalModel({
     required this.id,
-    required this.poskoId,
-    required this.tanggal,
     required this.kegiatan,
+    required this.tanggal,
     required this.lokasi,
+    required this.poskoId,
+    this.namaPosko,
   });
 
   factory JadwalModel.fromMap(Map<String, dynamic> data, String documentId) {
     return JadwalModel(
       id: documentId,
-      poskoId: data['poskoId'] ?? '',
-      tanggal: (data['tanggal'] as Timestamp).toDate(),
       kegiatan: data['kegiatan'] ?? '',
+      tanggal: (data['tanggal'] as Timestamp).toDate(),
       lokasi: data['lokasi'] ?? '',
+      poskoId: data['poskoId'] ?? '',
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'poskoId': poskoId,
-      'tanggal': Timestamp.fromDate(tanggal),
-      'kegiatan': kegiatan,
-      'lokasi': lokasi,
-    };
   }
 }

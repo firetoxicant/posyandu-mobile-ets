@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Posyandu App',
+      title: 'Posyandu s coba ',
       theme: ThemeData(
         primaryColor: const Color(0xFF4FC3F7), // Biru Muda Elegan
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4FC3F7)),

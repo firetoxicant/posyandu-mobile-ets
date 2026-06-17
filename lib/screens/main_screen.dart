@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
-import 'dashboard_admin.dart'; // Sesuaikan nama file dashboard Anda
-import 'dashboard_kader.dart'; // Sesuaikan nama file dashboard Anda
-import 'dashboard_orangtua.dart'; // Sesuaikan nama file dashboard Anda
+import 'dashboard_admin.dart';
+import 'dashboard_kader.dart';
+import 'dashboard_orangtua.dart';
 import 'profile_screen.dart';
+import 'riwayat_pemeriksaan.dart';
 
 class MainScreen extends StatefulWidget {
+
   const MainScreen({super.key});
 
   @override
@@ -32,7 +34,7 @@ class _MainScreenState extends State<MainScreen> {
     if (user.role == 'admin') {
       screens = [
         const DashboardAdmin(), // Ganti dengan layar Dashboard Admin Anda
-        const Center(child: Text('Halaman Kelola Data (Rekomendasi)')), // Buat layar Kelola Data nanti
+        const RiwayatPemeriksaanScreen(role: 'admin', userId: ''),
         const ProfileScreen(),
       ];
       navItems = const [
@@ -43,7 +45,7 @@ class _MainScreenState extends State<MainScreen> {
     } else if (user.role == 'kader') {
       screens = [
         const DashboardKader(),
-        const Center(child: Text('Halaman Riwayat Pemeriksaan Kader')), // Buat layar Riwayat Kader
+        RiwayatPemeriksaanScreen(role: 'kader', userId: user.id),
         const ProfileScreen(),
       ];
       navItems = const [
@@ -55,7 +57,7 @@ class _MainScreenState extends State<MainScreen> {
       // Default: Orang Tua
       screens = [
         const DashboardOrangTua(),
-        const Center(child: Text('Halaman Riwayat Anak')), // Buat layar Riwayat Anak
+        RiwayatPemeriksaanScreen(role: 'orangTua', userId: user.id),
         const ProfileScreen(),
       ];
       navItems = const [

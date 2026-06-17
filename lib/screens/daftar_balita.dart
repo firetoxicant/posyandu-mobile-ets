@@ -22,8 +22,8 @@ class _DaftarBalitaScreenState extends State<DaftarBalitaScreen> {
       // 2. Tarik data balita khusus di posko tersebut
       context.read<BalitaProvider>().fetchBalitaByPosko(poskoId);
       
-      // 3. Tarik data daftar orang tua untuk pilihan di form
-      context.read<BalitaProvider>().fetchOrangTua();
+      // 3. Tarik data daftar orang tua KHUSUS di posko kader (Kirim poskoId)
+      context.read<BalitaProvider>().fetchOrangTua(poskoId); 
     });
   }
 
@@ -84,7 +84,7 @@ class _DaftarBalitaScreenState extends State<DaftarBalitaScreen> {
                     ),
                     const SizedBox(height: 8),
 
-                    // Pemilih Orang Tua
+                    // Pemilih Orang Tua (Sekarang listOrangTua hanya berisi ortu di posko yang sama)
                     DropdownButtonFormField<String>(
                       value: selectedOrangTuaId,
                       decoration: const InputDecoration(labelText: 'Pilih Orang Tua'),
@@ -155,7 +155,7 @@ class _DaftarBalitaScreenState extends State<DaftarBalitaScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => DetailBalitaScreen(balita: balita)),
+                    MaterialPageRoute(builder: (_) => DetailBalitaScreen(balita: balita, role: 'kader')),
                   );
                 },
                 trailing: IconButton(

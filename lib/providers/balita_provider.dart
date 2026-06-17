@@ -35,21 +35,31 @@ class BalitaProvider with ChangeNotifier {
   }
 
   // READ: Mengambil daftar Orang Tua untuk dropdown pilihan saat Kader mendaftarkan balita
-  Future<void> fetchOrangTua() async {
-    try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('role', isEqualTo: 'orangtua')
-          .get();
+  // Menerima parameter poskoId
+Future<void> fetchOrangTua(String poskoId) async {
+  _isLoading = true;
+  notifyListeners();
 
-      _listOrangTua = snapshot.docs.map((doc) {
-        return UserModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
-      }).toList();
-      notifyListeners();
-    } catch (e) {
-      debugPrint("Error fetching orang tua: $e");
-    }
+  try {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users') // Atau koleksi tempat Anda menyimpan data orang tua
+        .where('role', isEqualTo: 'orangtua')
+        // 👇 TAMBAHKAN BARIS INI UNTUK FILTER POSKO
+        .where('poskoId', isEqualTo: poskoId) 
+        .get();
+
+    // Mapping ke model Anda...
+    _listOrangTua = snapshot.docs.map((doc) {
+      return UserModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+    }).toList();
+
+  } catch (e) {
+    debugPrint("Error fetching orang tua: $e");
   }
+
+  _isLoading = false;
+  notifyListeners();
+}
 
   // CREATE: Tambah Balita Baru
   Future<bool> tambahBalita({
