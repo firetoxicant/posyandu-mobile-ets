@@ -141,6 +141,23 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  // --- UPDATE: Mengubah Data Profil & Penugasan Posko Kader ---
+  Future<bool> updateKader(String uid, String nama, String poskoId) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'namaLengkap': nama,
+        'poskoId': poskoId,
+      });
+
+      // Refresh list kader agar UI otomatis ter-update dengan data baru
+      await fetchSemuaKader(); 
+      return true;
+    } catch (e) {
+      debugPrint("Error update kader: $e");
+      return false;
+    }
+  }
+
   Future<bool> hapusKader(String uid) async {
     try {
       await FirebaseFirestore.instance.collection('users').doc(uid).delete();

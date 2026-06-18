@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 import '../providers/posko_provider.dart';
+import '../models/user.dart'; // Pastikan model UserModel di-import
 
 class ManajemenKaderScreen extends StatefulWidget {
   const ManajemenKaderScreen({super.key});
@@ -11,7 +12,6 @@ class ManajemenKaderScreen extends StatefulWidget {
 }
 
 class _ManajemenKaderScreenState extends State<ManajemenKaderScreen> {
-  // Variabel untuk menampung filter posko yang dipilih (null berarti 'Semua Posko')
   String? _selectedFilterPoskoId;
 
   @override
@@ -23,6 +23,7 @@ class _ManajemenKaderScreenState extends State<ManajemenKaderScreen> {
     });
   }
 
+  // --- FORM 1: TAMBAH KADER ---
   void _tampilkanFormTambah(BuildContext context) {
     final namaCtrl = TextEditingController();
     final emailCtrl = TextEditingController();
@@ -119,6 +120,90 @@ class _ManajemenKaderScreenState extends State<ManajemenKaderScreen> {
     );
   }
 
+  // --- FORM 2: EDIT/UPDATE KADER (BARU) ---
+  void _tampilkanFormEdit(BuildContext context, UserModel kader) {
+    // Isi otomatis textfield dengan nama kader yang lama
+    final namaCtrl = TextEditingController(text: kader.namaLengkap);
+    // Isi otomatis dropdown dengan id posko yang lama
+    String? selectedPoskoId = kader.poskoId; 
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            final poskoList = context.read<PoskoProvider>().listPosko;
+
+            return AlertDialog(
+              title: const Text('Edit Data Kader'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: namaCtrl,
+                      decoration: const InputDecoration(labelText: 'Nama Lengkap'),
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(labelText: 'Pindahkan ke Posko'),
+                      value: selectedPoskoId,
+                      items: poskoList.map((posko) {
+                        return DropdownMenuItem(
+                          value: posko.id,
+                          child: Text(posko.namaPosko),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setStateDialog(() {
+                          selectedPoskoId = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Batal'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (namaCtrl.text.isNotEmpty && selectedPoskoId != null) {
+                      
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Memperbarui data kader...')),
+                      );
+
+                      // Panggil fungsi update di provider
+                      bool sukses = await context.read<UserProvider>().updateKader(
+                            kader.id,
+                            namaCtrl.text.trim(),
+                            selectedPoskoId!,
+                          );
+
+                      if (!context.mounted) return;
+                      Navigator.pop(context);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(sukses ? 'Data kader berhasil diperbarui' : 'Gagal memperbarui data'),
+                          backgroundColor: sukses ? Colors.green : Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('Simpan Perubahan'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final poskoProvider = context.watch<PoskoProvider>();
@@ -136,7 +221,7 @@ class _ManajemenKaderScreenState extends State<ManajemenKaderScreen> {
       ),
       body: Column(
         children: [
-          // --- WIDGET DROPDOWN FILTER ---
+          // Filter Dropdown
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: DropdownButtonFormField<String>(
@@ -148,7 +233,7 @@ class _ManajemenKaderScreenState extends State<ManajemenKaderScreen> {
               ),
               items: [
                 const DropdownMenuItem<String>(
-                  value: null, // Nilai null diset sebagai "Semua Posko"
+                  value: null,
                   child: Text('Semua Posko'),
                 ),
                 ...poskoProvider.listPosko.map((posko) {
@@ -160,13 +245,13 @@ class _ManajemenKaderScreenState extends State<ManajemenKaderScreen> {
               ],
               onChanged: (value) {
                 setState(() {
-                  _selectedFilterPoskoId = value; // Update status filter
+                  _selectedFilterPoskoId = value;
                 });
               },
             ),
           ),
 
-          // --- DAFTAR KADER ---
+          // Daftar Kader
           Expanded(
             child: Consumer<UserProvider>(
               builder: (context, userProvider, child) {
@@ -178,7 +263,6 @@ class _ManajemenKaderScreenState extends State<ManajemenKaderScreen> {
                   return const Center(child: Text('Belum ada data Kader.'));
                 }
 
-                // Melakukan penyaringan (filtering) data kader di sisi UI
                 final kaderTerfilter = _selectedFilterPoskoId == null
                     ? userProvider.listKader
                     : userProvider.listKader
@@ -195,7 +279,6 @@ class _ManajemenKaderScreenState extends State<ManajemenKaderScreen> {
                   itemBuilder: (context, index) {
                     final kader = kaderTerfilter[index];
 
-                    // Cari nama posko yang cocok dari PoskoProvider untuk ditampilkan di subjudul card
                     final infoPosko = poskoProvider.listPosko.firstWhere(
                       (p) => p.id == kader.poskoId,
                     );
@@ -213,11 +296,23 @@ class _ManajemenKaderScreenState extends State<ManajemenKaderScreen> {
                         title: Text(kader.namaLengkap, style: const TextStyle(fontWeight: FontWeight.bold)),
                         subtitle: Text('${kader.email}\nPosko: $namaPoskoKader'),
                         isThreeLine: true,
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            userProvider.hapusKader(kader.id);
-                          },
+                        // --- PERUBAHAN: Mengubah trailing menjadi Row agar muat dua tombol ---
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Tombol Edit (Biru)
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.blue),
+                              onPressed: () => _tampilkanFormEdit(context, kader),
+                            ),
+                            // Tombol Hapus (Merah)
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () {
+                                userProvider.hapusKader(kader.id);
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     );
