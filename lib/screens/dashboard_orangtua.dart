@@ -32,7 +32,6 @@ class _DashboardOrangTuaState extends State<DashboardOrangTua> {
         // 2. Jika anak ditemukan, ambil jadwal (beserta nama posko) berdasarkan poskoId anak pertama
         final balitas = balitaProvider.listBalita;
         if (balitas.isNotEmpty) {
-          // Pastikan fungsi ini ada di JadwalProvider Anda sesuai instruksi sebelumnya
           jadwalProvider.fetchJadwalMendatang(balitas[0].poskoId);
         }
       }
@@ -89,6 +88,7 @@ class _DashboardOrangTuaState extends State<DashboardOrangTua> {
             ),
 
             // --- JADWAL POSYANDU ---
+            if(user?.poskoId != null )
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
               child: Text('Jadwal Posyandu Mendatang',

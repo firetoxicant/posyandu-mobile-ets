@@ -35,6 +35,7 @@ class JadwalProvider with ChangeNotifier {
 // READ: Mengambil jadwal yang akan datang untuk posko tertentu beserta nama posko
   Future<void> fetchJadwalMendatang(String poskoIdUser) async {
     _isLoading = true;
+    _listJadwal = [];
     notifyListeners();
 
     try {
